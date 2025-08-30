@@ -1,31 +1,25 @@
-// Fonction principale pour envoyer une requête à l'IA
 async function sendMessage() {
-    const input = document.getElementById("userInput").value;
-    const output = document.getElementById("response");
+  const input = document.getElementById("userInput");
+  const message = input.value;
+  if (!message) return;
 
-    if (!input.trim()) {
-        output.innerText = "⚠️ Merci d'écrire un message.";
-        return;
-    }
+  const chatBox = document.getElementById("chat-box");
+  chatBox.innerHTML += `<div><b>Moi :</b> ${message}</div>`;
 
-    output.innerText = "⏳ L'IA réfléchit...";
+  input.value = "";
 
-    try {
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${OPENAI_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo",
-                messages: [{ role: "user", content: input }]
-            })
-        });
+  try {
+    const res = await fetch("/.netlify/functions/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userMessage: message, mode: "assistant" })
+    });
 
-        const data = await response.json();
-        output.innerText = data.choices[0].message.content;
-    } catch (error) {
-        output.innerText = "❌ Erreur : " + error.message;
-    }
+    const data = await res.json();
+    chatBox.innerHTML += `<div><b>IA :</b> ${data.reply}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    chatBox.innerHTML += `<div style="color:red;"><b>Erreur :</b> ${err.message}</div>`;
+  }
 }
+
