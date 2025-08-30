@@ -1,8 +1,65 @@
-[build]
-  publish = "."
-  functions = "netlify/functions"
+// ---------------------
+// Chat front-end logic
+// ---------------------
 
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+const dialogue = document.getElementById("dialogue");   // <div id="dialogue"></div>
+const form     = document.getElementById("chat-form");  // <form id="chat-form">...</form>
+const input    = document.getElementById("message");    // <input id="message">
+let currentMode = "Prof de langues IA";                 // mode par défaut
+
+// (Optionnel) boutons de mode: <button class="mode-btn" data-mode="Coach Business IA">...</button>
+const modeButtons = document.querySelectorAll(".mode-btn");
+modeButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentMode = btn.dataset.mode || "Général";
+    modeButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    addMessage(`Mode activé : ${currentMode}`, "ia");
+  });
+});
+
+// Ajoute un message dans la zone de dialogue
+function addMessage(text, who = "ia") {
+  const bubble = document.createElement("div");
+  bubble.className = `message ${who === "user" ? "user" : "ia"}`;
+  bubble.textContent = text;
+  dialogue.appendChild(bubble);
+  dialogue.scrollTop = dialogue.scrollHeight;
+}
+
+// Envoi du message
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+
+  // Affiche le message utilisateur
+  addMessage(text, "user");
+  input.value = "";
+  input.focus();
+
+  try {
+    // IMPORTANT : grâce au redirect de netlify.toml, /api/chat => /.netlify/functions/chat
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userMessage: text, mode: currentMode })
+    });
+
+    if (!res.ok) {
+      // Affiche l'erreur HTTP (ex: 404, 500)
+      addMessage(`Erreur HTTP ${res.status}`, "ia");
+      return;
+    }
+
+    const data = await res.json();
+    const reply = data?.reply || "Désolé, pas de réponse reçue.";
+    addMessage(reply, "ia");
+  } catch (err) {
+    addMessage(`Erreur: ${err.message}`, "ia");
+  }
+});
+
+// (Optionnel) message d’accueil
+addMessage("Salut ! Dis-moi ce que tu veux faire 👋", "ia");
+
