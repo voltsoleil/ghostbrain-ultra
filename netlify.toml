@@ -1,4 +1,4 @@
-// ---------------------
+ // ---------------------
 // Chat front-end logic
 // ---------------------
 
@@ -62,4 +62,3 @@ form.addEventListener("submit", async (e) => {
 
 // (Optionnel) message d’accueil
 addMessage("Salut ! Dis-moi ce que tu veux faire 👋", "ia");
-
