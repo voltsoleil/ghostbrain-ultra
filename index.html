@@ -1,6 +1,23 @@
-<button class="mode-btn" data-mode="Prof de langues IA">Prof de langues IA</button>
-<button class="mode-btn" data-mode="Coach Business IA">Coach Business IA</button>
-<button class="mode-btn" data-mode="Motivateur IA">Motivateur IA</button>
-<button class="mode-btn" data-mode="Expert Sécurité IA">Expert Sécurité IA</button>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GhostBrain Ultra</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>💬 Dialogue avec GhostBrain Ultra</h1>
 
+  <div id="dialogue" style="border:1px solid #ccc; padding:10px; margin-bottom:10px; height:300px; overflow-y:auto;">
+    <div><strong>IA:</strong> Bonjour 👋, je suis prêt à discuter avec toi.</div>
+  </div>
 
+  <form>
+    <input type="text" id="message" placeholder="Écris ton message..." required />
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <script src="script.js"></script>
+</body>
+</html>
