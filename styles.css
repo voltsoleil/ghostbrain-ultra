@@ -1,58 +1,43 @@
-/* Styles généraux */
 body {
+  background: #0f172a;
+  color: white;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0d1b2a, #1b263b, #415a77);
-  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
   margin: 0;
-  padding: 0;
-  text-align: center;
 }
-
-header {
-  background: #0d1b2a;
-  padding: 20px;
-  font-size: 22px;
-  font-weight: bold;
-  color: #00d9ff;
-}
-
-.container {
-  max-width: 900px;
-  margin: 30px auto;
-  padding: 20px;
-  background: rgba(0,0,0,0.5);
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-}
-
-select, input, button {
-  padding: 12px;
-  margin: 10px;
-  border-radius: 10px;
-  border: none;
-  font-size: 16px;
-}
-
-button {
-  background: #00d9ff;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: #ff4ecd;
-  color: white;
-}
-
-textarea {
+.app {
   width: 90%;
-  height: 150px;
-  border-radius: 10px;
+  max-width: 600px;
+  background: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+}
+#chat-box {
+  height: 300px;
+  overflow-y: auto;
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+.input-area {
+  display: flex;
+  gap: 10px;
+}
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
-  padding: 12px;
-  font-size: 16px;
-  margin-top: 15px;
-  resize: none;
+}
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  background: #38bdf8;
+  color: white;
+  cursor: pointer;
 }
