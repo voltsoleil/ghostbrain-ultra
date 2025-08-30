@@ -3,26 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GhostBrain Ultra</title>
+  <title>GhostBrain Ultra+</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>👻 GhostBrain Ultra</h1>
-  <p>Sélectionne ton mode IA :</p>
-
-  <div class="modes">
-    <button onclick="setMode('Prof de langues')">🌍 Prof de langues IA</button>
-    <button onclick="setMode('Coach Business')">💼 Coach Business IA</button>
-    <button onclick="setMode('Motivateur')">🔥 Motivateur IA</button>
-    <button onclick="setMode('Expert Sécurité')">🛡️ Expert Sécurité IA</button>
+  <div class="app">
+    <h1>🧠 GhostBrain Ultra+</h1>
+    <div id="chat-box"></div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Écris ton message...">
+      <button onclick="sendMessage()">Envoyer</button>
+    </div>
   </div>
-
-  <div id="chatbox">
-    <div id="messages"></div>
-    <input type="text" id="userInput" placeholder="Écris ton message...">
-    <button onclick="sendMessage()">Envoyer</button>
-  </div>
-
   <script src="script.js"></script>
 </body>
 </html>
+
