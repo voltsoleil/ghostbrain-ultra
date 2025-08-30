@@ -1,49 +1,57 @@
-const fetch = require("node-fetch");
+// --- Front-end chat for GhostBrain Ultra ---
+const form = document.querySelector("form");
+const input = document.querySelector("#message");
+const dialogue = document.querySelector("#dialogue");
+const modeRadios = document.querySelectorAll('input[name="mode"]');
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return {
-      statusCode: 405,
-      body: JSON.stringify({ error: "Méthode non autorisée" }),
-    };
-  }
+function currentMode() {
+  const checked = Array.from(modeRadios).find(r => r.checked);
+  return checked ? checked.value : "Coach Business IA";
+}
 
+function addBubble(who, text) {
+  const line = document.createElement("div");
+  line.className = "bubble " + (who === "TU" ? "me" : "gb");
+  line.innerHTML = `<strong>${who}</strong> — ${text}`;
+  dialogue.appendChild(line);
+  dialogue.scrollTop = dialogue.scrollHeight;
+}
+
+async function talk(userMessage) {
   try {
-    const body = JSON.parse(event.body || "{}");
-    const message = body.message;
-
-    if (!message) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Message utilisateur manquant" }),
-      };
-    }
-
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const res = await fetch("/api/chat", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [{ role: "user", content: message }],
-      }),
+        userMessage,
+        mode: currentMode()
+      })
     });
 
-    const data = await response.json();
+    if (!res.ok) {
+      const txt = await res.text();
+      addBubble("GB", `Erreur HTTP ${res.status} — ${txt.slice(0,200)}`);
+      return;
+    }
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ reply: data.choices[0].message.content }),
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
+    const data = await res.json();
+    const reply = data.reply || "(pas de réponse)";
+    addBubble("GB", reply);
+  } catch (err) {
+    addBubble("GB", "Erreur réseau : " + err.message);
   }
-};
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userMessage = (input.value || "").trim();
+  if (!userMessage) return;
+
+  addBubble("TU", userMessage);
+  input.value = "";
+  await talk(userMessage);
+});
+
 
 
    
