@@ -1,16 +1,25 @@
-// netlify/functions/chat.js
-export async function handler(event) {
+const fetch = require("node-fetch");
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: "Méthode non autorisée" }),
+    };
+  }
+
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Method Not Allowed" };
+    const body = JSON.parse(event.body || "{}");
+    const message = body.message;
+
+    if (!message) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Message utilisateur manquant" }),
+      };
     }
 
-    const { userMessage, mode } = JSON.parse(event.body || "{}");
-    if (!userMessage) {
-      return { statusCode: 400, body: "Missing userMessage" };
-    }
-
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -18,35 +27,23 @@ export async function handler(event) {
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: `Tu es en mode ${mode || "général"}. Réponds brièvement.` },
-          { role: "user", content: userMessage },
-        ],
-        temperature: 0.7,
+        messages: [{ role: "user", content: message }],
       }),
     });
 
-    const data = await resp.json();
+    const data = await response.json();
 
-    if (!resp.ok) {
-      return {
-        statusCode: resp.status,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: data?.error?.message || "Upstream error" }),
-      };
-    }
-
-    const reply = data.choices?.[0]?.message?.content ?? "(pas de réponse)";
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reply }),
+      body: JSON.stringify({ reply: data.choices[0].message.content }),
     };
-  } catch (err) {
+  } catch (error) {
     return {
       statusCode: 500,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: err.message }),
+      body: JSON.stringify({ error: error.message }),
     };
   }
-}
+};
+
+
+   
