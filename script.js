@@ -1,25 +1,33 @@
-async function sendMessage() {
-  const input = document.getElementById("userInput");
-  const message = input.value;
-  if (!message) return;
+const form = document.querySelector("form");
+const input = document.querySelector("#message");
+const dialogue = document.querySelector("#dialogue");
 
-  const chatBox = document.getElementById("chat-box");
-  chatBox.innerHTML += `<div><b>Moi :</b> ${message}</div>`;
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
+  const userMessage = input.value.trim();
+  if (!userMessage) return;
+
+  // Afficher ton message
+  dialogue.innerHTML += `<div><strong>Tu:</strong> ${userMessage}</div>`;
   input.value = "";
 
   try {
-    const res = await fetch("/.netlify/functions/chat", {
+    // Envoyer la requête POST à Netlify Function
+    const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userMessage: message, mode: "assistant" })
+      body: JSON.stringify({ message: userMessage }),
     });
 
-    const data = await res.json();
-    chatBox.innerHTML += `<div><b>IA :</b> ${data.reply}</div>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
-  } catch (err) {
-    chatBox.innerHTML += `<div style="color:red;"><b>Erreur :</b> ${err.message}</div>`;
-  }
-}
+    const data = await response.json();
 
+    if (data.reply) {
+      dialogue.innerHTML += `<div><strong>IA:</strong> ${data.reply}</div>`;
+    } else {
+      dialogue.innerHTML += `<div><strong>IA:</strong> Erreur: ${data.error}</div>`;
+    }
+  } catch (err) {
+    dialogue.innerHTML += `<div><strong>IA:</strong> Erreur serveur</div>`;
+  }
+});
